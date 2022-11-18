@@ -186,6 +186,8 @@ def plot_bands(
         Specify the vmin to scale imshow() plots.
     vmax : Int (Optional)
         Specify the vmax to scale imshow() plots.
+    ax : object(s) (optional)
+        The axes object(s) where the ax element should be plotted.
     alpha : float (optional)
         The alpha value for the plot. This will help adjust the transparency
         of the plot to the desired level.
@@ -248,8 +250,21 @@ def plot_bands(
         total_layers = arr.shape[0]
 
         # Plot all bands
-        fig, axs = plt.subplots(plot_rows, cols, figsize=figsize)
-        axs_ravel = axs.ravel()
+        if ax is None:
+            fig, axs = plt.subplots(plot_rows, cols, figsize=figsize)
+            axs_ravel = axs.ravel()
+            show = True
+        else:
+            if not isinstance(ax, np.ndarray) or len(ax.ravel()) < arr.shape[0]:
+                raise ValueError(
+                    "plot_bands expects the ax keyword argument "
+                    "to be a numpy.ndarray with number of elements "
+                    "greater than or equal to the number of array raster layers."
+                )
+            axs = ax
+            axs_ravel = ax.ravel()
+
+
         for ax, i in zip(axs_ravel, range(total_layers)):
             band = i + 1
 
@@ -280,7 +295,8 @@ def plot_bands(
             ax.set_axis_off()
             ax.set(xticks=[], yticks=[])
         plt.tight_layout()
-        plt.show()
+        if show:
+            plt.show()
         return axs
 
     elif arr.ndim == 2 or arr.shape[0] == 1:

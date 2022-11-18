@@ -246,6 +246,19 @@ def test_multi_panel_single_band(one_band_3dims):
     assert all_axes[1].get_title() == title2
 
 
+def test_ax_argument_multi_band(image_array_3bands):
+    """Test that ax keyword argument is used for multi band arr."""
+    f, axs = plt.subplots(3, 1)
+    axs2 = ep.plot_bands(image_array_3bands, ax=axs)
+
+    assert np.all(axs == axs2)
+
+    f, axs = plt.subplots(1, 2)
+    with pytest.raises(ValueError, match=r"number of elements"):
+        axs3 = ep.plot_bands(image_array_3bands, ax=axs)
+
+
+
 def test_alpha(image_array_2bands):
     """Test that the alpha param returns a plot with the correct alpha."""
     alpha_val = 0.5
